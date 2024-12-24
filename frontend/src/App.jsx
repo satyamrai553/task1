@@ -5,12 +5,13 @@ const App = () => {
   const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch data from API
+
+  
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const response = await axios.get("http://localhost:3000/api/v1/student/list");
-        setStudents(response.data.data || []); // Safeguard if `data` is undefined
+        setStudents(response.data.data || []); 
       } catch (error) {
         console.error("Error fetching student data:", error);
       }
@@ -20,8 +21,8 @@ const App = () => {
 
   // Filtered list based on search query
   const filteredStudents = students.filter((student) => {
-    const name = student.name || ""; // Default to an empty string if `name` is undefined
-    const skill = student.skill || ""; // Default to an empty string if `skill` is undefined
+    const name = student.Name || ""; 
+    const skill = student.Skill || ""; 
     return (
       name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       skill.toLowerCase().includes(searchQuery.toLowerCase())
@@ -59,9 +60,9 @@ const App = () => {
               filteredStudents.map((student) => (
                 <tr key={student.id} className="border-b hover:bg-gray-100">
                   <td className="p-3">{student.id}</td>
-                  <td className="p-3">{student.Name || "N/A"}</td>
-                  <td className="p-3">{student.Skill || "N/A"}</td>
-                  <td className="p-3">{student.Branch || "N/A"}</td>
+                  <td className="p-3">{student.Name}</td>
+                  <td className="p-3">{student.Skill}</td>
+                  <td className="p-3">{student.Branch}</td>
                 </tr>
               ))
             ) : (
