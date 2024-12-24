@@ -4,14 +4,14 @@ import axios from "axios";
 const App = () => {
   const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortOrder, setSortOrder] = useState("normal");  
 
   // Fetch data from API
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const response = await axios.get("http://localhost:3000/api/v1/student/list");
-        setStudents(response.data.data || []);
+        setStudents(response.data.data || []); 
       } catch (error) {
         console.error("Error fetching student data:", error);
       }
@@ -19,19 +19,18 @@ const App = () => {
     fetchStudents();
   }, []);
 
-  // Sort students by Experience
-  const sortedStudents = [...students].sort((a, b) => {
-    if (sortOrder === "asc") {
-      return a.Experience - b.Experience;
-    } else {
-      return b.Experience - a.Experience;
-    }
-  });
+  // Sort students by ID (ascending) by default
+  const sortedById = [...students].sort((a, b) => a.id - b.id);
+
+  // If the sortOrder is "desc", sort by Experience (descending)
+  const sortedStudents = sortOrder === "desc" 
+    ? [...sortedById].sort((a, b) => b.Experience - a.Experience)
+    : sortedById;
 
   // Filter students by search query
   const filteredStudents = sortedStudents.filter((student) => {
-    const name = student.Name || ""; 
-    const skill = student.Skill || ""; 
+    const name = student.Name || ""; // Correct field name
+    const skill = student.Skill || ""; // Correct field name
     return (
       name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       skill.toLowerCase().includes(searchQuery.toLowerCase())
@@ -56,10 +55,10 @@ const App = () => {
       {/* Sort By Experience */}
       <div className="mb-6">
         <button
-          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          onClick={() => setSortOrder(sortOrder === "desc" ? "normal" : "desc")}
           className="p-3 bg-blue-500 text-white rounded-lg"
         >
-          Sort by Experience ({sortOrder === "asc" ? "Ascending" : "Descending"})
+          Sort by Experience ({sortOrder === "desc" ? "Descending" : "Normal (by ID)"})
         </button>
       </div>
 
