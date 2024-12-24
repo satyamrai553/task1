@@ -4,14 +4,14 @@ import axios from "axios";
 const App = () => {
   const [students, setStudents] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
-
-  
+  // Fetch data from API
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const response = await axios.get("http://localhost:3000/api/v1/student/list");
-        setStudents(response.data.data || []); 
+        setStudents(response.data.data || []);
       } catch (error) {
         console.error("Error fetching student data:", error);
       }
@@ -19,8 +19,17 @@ const App = () => {
     fetchStudents();
   }, []);
 
-  // Filtered list based on search query
-  const filteredStudents = students.filter((student) => {
+  // Sort students by Experience
+  const sortedStudents = [...students].sort((a, b) => {
+    if (sortOrder === "asc") {
+      return a.Experience - b.Experience;
+    } else {
+      return b.Experience - a.Experience;
+    }
+  });
+
+  // Filter students by search query
+  const filteredStudents = sortedStudents.filter((student) => {
     const name = student.Name || ""; 
     const skill = student.Skill || ""; 
     return (
@@ -44,6 +53,16 @@ const App = () => {
         />
       </div>
 
+      {/* Sort By Experience */}
+      <div className="mb-6">
+        <button
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          className="p-3 bg-blue-500 text-white rounded-lg"
+        >
+          Sort by Experience ({sortOrder === "asc" ? "Ascending" : "Descending"})
+        </button>
+      </div>
+
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-lg">
@@ -53,6 +72,7 @@ const App = () => {
               <th className="p-3 text-left">Name</th>
               <th className="p-3 text-left">Skill</th>
               <th className="p-3 text-left">Branch</th>
+              <th className="p-3 text-left">Experience (Years)</th>
             </tr>
           </thead>
           <tbody>
@@ -63,11 +83,12 @@ const App = () => {
                   <td className="p-3">{student.Name}</td>
                   <td className="p-3">{student.Skill}</td>
                   <td className="p-3">{student.Branch}</td>
+                  <td className="p-3">{student.Experience}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="p-3 text-center text-gray-500">
+                <td colSpan="5" className="p-3 text-center text-gray-500">
                   No students found.
                 </td>
               </tr>
